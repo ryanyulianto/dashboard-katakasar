@@ -307,6 +307,15 @@ button:hover {
   background: linear-gradient(135deg, #7c3aed, #6d28d9);
 }
 
+.device-btn {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.device-btn:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+}
+
 /* Sync Status */
 .sync-status {
   display: flex;
@@ -498,6 +507,19 @@ button:hover {
 
 .minus-btn {
   background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.log-btn {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #ffffff;
+  padding: 8px;
+  font-size: 12px;
+  min-width: 36px;
+  border-radius: 8px;
+}
+
+.log-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
 }
 
 .delete-btn {
@@ -723,6 +745,361 @@ button:hover {
   }
 }
 
+/* User Profile Modal Styles */
+.user-profile-modal {
+  z-index: 1001;
+}
+
+.user-profile-modal .modal-content {
+  max-width: 500px;
+  margin: 10% auto;
+}
+
+.user-profile-content {
+  border: 2px solid #667eea;
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+}
+
+.user-profile-modal .modal-header {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  text-align: center;
+  padding: 30px 24px;
+}
+
+.modal-subtitle {
+  margin: 8px 0 0 0;
+  font-size: 0.9em;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+.profile-setup-form {
+  padding: 20px 0;
+}
+
+.profile-setup-form .form-group {
+  margin-bottom: 24px;
+}
+
+.profile-setup-form label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 1em;
+}
+
+.dark-mode .profile-setup-form label {
+  color: #e8eaed;
+}
+
+.profile-setup-form input[type="text"] {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1em;
+  transition: all 0.3s;
+  background: #ffffff;
+}
+
+.profile-setup-form input[type="text"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.profile-setup-form input[type="text"]:invalid {
+  border-color: #ef4444;
+}
+
+.dark-mode .profile-setup-form input[type="text"] {
+  background: #1f2937;
+  border-color: #374151;
+  color: #e8eaed;
+}
+
+.dark-mode .profile-setup-form input[type="text"]:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.form-hint {
+  display: block;
+  font-size: 0.85em;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.dark-mode .form-hint {
+  color: #9ca3af;
+}
+
+/* Camera Section Styles */
+.camera-section {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+.camera-placeholder {
+  padding: 40px 20px;
+  text-align: center;
+  background: #f9fafb;
+}
+
+.camera-placeholder .camera-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 10px;
+  color: #6b7280;
+}
+
+.camera-placeholder p {
+  margin: 10px 0 20px 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.start-camera-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.start-camera-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.camera-preview {
+  position: relative;
+  background: #000;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-preview::before {
+  content: '📹 Kamera sedang memuat...';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.2rem;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.camera-preview.video-loaded::before {
+  opacity: 0;
+}
+
+.camera-preview video {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+  background: #000;
+  border: none;
+  outline: none;
+}
+
+.camera-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  padding: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.capture-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+
+.capture-btn:hover:not(:disabled) {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+.capture-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.stop-camera-btn {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.stop-camera-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.photo-result {
+  padding: 20px;
+  text-align: center;
+  background: white;
+}
+
+.photo-result img {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 3px solid #e5e7eb;
+}
+
+.photo-actions {
+  margin-top: 15px;
+}
+
+.retake-btn {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retake-btn:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+.photo-upload-area {
+  position: relative;
+}
+
+.photo-upload-area input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.photo-preview {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.3s;
+  background: #f9fafb;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-preview:hover {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.dark-mode .photo-preview {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.dark-mode .photo-preview:hover {
+  border-color: #667eea;
+  background: #1e3a8a;
+}
+
+.photo-placeholder {
+  text-align: center;
+}
+
+.photo-icon {
+  font-size: 2em;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.photo-placeholder p {
+  margin: 8px 0 4px 0;
+  font-weight: 500;
+  color: #374151;
+}
+
+.dark-mode .photo-placeholder p {
+  color: #e8eaed;
+}
+
+.photo-placeholder small {
+  color: #6b7280;
+  font-size: 0.8em;
+}
+
+.dark-mode .photo-placeholder small {
+  color: #9ca3af;
+}
+
+.photo-preview img {
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #667eea;
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.form-actions button {
+  padding: 14px 32px;
+  font-size: 1.1em;
+  font-weight: 600;
+  min-width: 200px;
+}
+
+.form-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #9ca3af;
+}
+
+.form-actions button:disabled:hover {
+  background: #9ca3af;
+  transform: none;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .bento-container {
@@ -773,6 +1150,25 @@ button:hover {
     width: 95%;
     margin: 10% auto;
   }
+
+  .user-profile-modal .modal-content {
+    width: 95%;
+    margin: 5% auto;
+  }
+
+  .form-actions button {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .camera-preview video {
+    height: 250px;
+  }
+
+  .camera-controls {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 /* Scrollbar */
@@ -792,4 +1188,264 @@ button:hover {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(102, 126, 234, 0.8);
+}
+
+/* Activity Log Modal */
+.activity-log-modal {
+  max-width: 700px;
+}
+
+.activity-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.log-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.dark-mode .log-item {
+  background: rgba(2, 52, 48, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.log-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.log-icon {
+  font-size: 1.5em;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.log-added .log-icon {
+  background: rgba(16, 185, 129, 0.1);
+  border: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+.log-increase .log-icon {
+  background: rgba(239, 68, 68, 0.1);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.log-decrease .log-icon {
+  background: rgba(251, 191, 36, 0.1);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+}
+
+.log-deleted .log-icon {
+  background: rgba(107, 114, 128, 0.1);
+  border: 2px solid rgba(107, 114, 128, 0.3);
+}
+
+.log-content {
+  flex: 1;
+}
+
+.log-action {
+  font-weight: 600;
+  font-size: 1.1em;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.dark-mode .log-action {
+  color: #ffffff;
+}
+
+.log-details {
+  font-size: 0.95em;
+  color: #4b5563;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.dark-mode .log-details {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.log-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85em;
+  color: #6b7280;
+  gap: 12px;
+}
+
+.dark-mode .log-meta {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.log-device {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.8em;
+}
+
+.dark-mode .log-device {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.log-time {
+  font-weight: 500;
+}
+
+/* User Photo in Activity Log */
+.log-user-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.log-user-photo:hover {
+  transform: scale(1.1);
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.log-user-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dark-mode .log-user-photo {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .log-user-photo:hover {
+  border-color: #667eea;
+}
+
+/* Fullscreen Photo Modal */
+.fullscreen-photo-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.fullscreen-photo-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreen-photo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  animation: zoomIn 0.3s ease;
+}
+
+.fullscreen-close {
+  position: absolute;
+  top: -50px;
+  right: -10px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 2001;
+  transition: all 0.3s ease;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreen-close:hover {
+  background: rgba(239, 68, 68, 0.8);
+  transform: scale(1.1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive untuk Activity Log */
+@media (max-width: 768px) {
+  .activity-log-modal {
+    max-width: 95%;
+  }
+  
+  .log-item {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .log-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .log-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 1.3em;
+  }
+  
+  .log-user-photo {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .fullscreen-close {
+    top: -40px;
+    right: -5px;
+    font-size: 30px;
+    width: 40px;
+    height: 40px;
+  }
 }

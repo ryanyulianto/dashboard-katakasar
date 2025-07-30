@@ -50,6 +50,7 @@
             <div class="action-buttons">
                 <button onclick="showRankingDashboard()" class="primary-btn">🏆 Lihat Ranking</button>
                 <button onclick="exportData()" class="info-btn">📤 Export Data</button>
+                <button onclick="showCurrentDeviceInfo()" class="device-btn">💻 Info Device</button>
                 <button onclick="toggleDarkMode()" class="toggle-btn">🌙 Dark Mode</button>
                 <button onclick="resetAllData()" class="danger-btn">🗑️ Reset Data</button>
             </div>
@@ -109,6 +110,70 @@
                 </div>
                 <div id="rankingList" class="ranking-list">
                     <!-- Ranking akan ditampilkan di sini -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Log Modal -->
+    <div id="activityLogModal" class="modal">
+        <div class="modal-content activity-log-modal">
+            <div class="modal-header">
+                <h2>📋 Log Aktivitas - <span id="logParticipantName"></span></h2>
+                <span class="close" onclick="closeActivityLogModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="activityLogList" class="activity-log-list">
+                    <!-- Log aktivitas akan ditampilkan di sini -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile Setup Modal -->
+    <div id="userProfileModal" class="modal user-profile-modal">
+        <div class="modal-content user-profile-content">
+            <div class="modal-header">
+                <h2>👤 Setup Profil User</h2>
+                <p class="modal-subtitle">Lengkapi profil Anda untuk melanjutkan</p>
+            </div>
+            <div class="modal-body">
+                <div class="profile-setup-form">
+                    <div class="form-group">
+                        <label for="userName">📝 Nama Lengkap</label>
+                        <input type="text" id="userName" placeholder="Masukkan nama lengkap Anda" required  pattern="[A-Za-z\s]+" title="Nama hanya boleh berisi huruf dan spasi">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userPhoto">📷 Foto Profil</label>
+                        <div class="camera-section">
+                            <div class="camera-preview" id="cameraPreview" style="display: none;">
+                                <video id="cameraVideo" autoplay playsinline></video>
+                                <div class="camera-controls">
+                                    <button type="button" id="captureBtn" class="capture-btn">📸 Ambil Foto</button>
+                                    <button type="button" id="stopCameraBtn" class="stop-camera-btn">❌ Tutup Kamera</button>
+                                </div>
+                            </div>
+                            <div class="photo-result" id="photoResult" style="display: none;">
+                                <canvas id="photoCanvas" style="display: none;"></canvas>
+                                <div id="photoPreview" class="photo-preview"></div>
+                                <div class="photo-actions">
+                                    <button type="button" id="retakeBtn" class="retake-btn">🔄 Foto Ulang</button>
+                                </div>
+                            </div>
+                            <div class="camera-placeholder" id="cameraPlaceholder">
+                                <span class="camera-icon">📸</span>
+                                <p>Ambil foto dengan kamera</p>
+                                <button type="button" id="startCameraBtn" class="start-camera-btn">🎥 Buka Kamera</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" onclick="saveUserProfile()" class="primary-btn" id="saveProfileBtn" disabled>
+                            💾 Simpan Profil
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
