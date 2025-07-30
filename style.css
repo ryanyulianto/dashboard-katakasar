@@ -280,15 +280,6 @@ button:hover {
   background: #4b5563;
 }
 
-.refresh-btn {
-  background: #10b981;
-  color: white;
-}
-
-.refresh-btn:hover {
-  background: #059669;
-}
-
 .backup-btn {
   background: #8b5cf6;
   color: white;
@@ -367,14 +358,40 @@ button:hover {
 }
 
 .sync-info {
-  font-size: 0.85em;
-  color: #6b7280;
-  margin: 0;
+  font-size: 12px;
+  color: #666;
+  margin-top: 10px;
+  text-align: left;
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
   line-height: 1.4;
 }
 
+.sync-info p {
+  margin: 4px 0;
+  line-height: 1.4;
+}
+
+.sync-info code {
+  background: #e9ecef;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: #d63384;
+}
+
 .dark-mode .sync-info {
-  color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.7);
+    background: #374151;
+    border-left-color: #60a5fa;
+}
+
+.dark-mode .sync-info code {
+    background: #4b5563;
+    color: #fbbf24;
 }
 
 .dark-mode .sync-status.status-synced {

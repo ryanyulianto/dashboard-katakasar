@@ -5,8 +5,6 @@ let isDarkMode = false;
 // Load data saat halaman dimuat
 window.addEventListener('load', function() {
     loadData();
-    renderParticipants();
-    updateStats();
 });
 
 // Fungsi untuk menambah peserta baru
@@ -201,13 +199,7 @@ function exportData() {
     showNotification('Data berhasil diexport!', 'success');
 }
 
-// Fungsi untuk refresh data dari server
-async function refreshData() {
-    showNotification('Memuat ulang data...', 'info');
-    await loadData();
-    renderParticipants();
-    updateStats();
-}
+
 
 // Fungsi untuk backup data ke file
 function backupData() {
@@ -249,7 +241,7 @@ function resetAllData() {
     }
 }
 
-// Fungsi untuk menyimpan data ke JSON file
+// Fungsi untuk menyimpan data langsung ke file data.json
 async function saveData() {
     const data = {
         participants: participants,
@@ -269,17 +261,48 @@ async function saveData() {
         // Simpan ke localStorage sebagai backup
         localStorage.setItem('minimalistRankingData', JSON.stringify(data));
         
-        // Simulasi penyimpanan ke data.json
-        // Dalam environment production dengan server backend, ini akan menggunakan API endpoint
-        // Untuk sekarang, data disimpan di localStorage dan dapat diakses melalui migrasi
-        
-        showNotification('Data berhasil disimpan ke database!', 'success');
-        
-        // Update display untuk menunjukkan data tersinkronisasi
-        updateSyncStatus('synced');
-        
-        // Update data.json secara manual untuk demo (dalam production ini dilakukan oleh server)
-        await updateDataJsonFile(data);
+        // Coba simpan ke server backend untuk auto-write ke data.json
+        try {
+            const response = await fetch('/api/save-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                showNotification('Data berhasil disimpan ke file data.json!', 'success');
+                updateSyncStatus('synced');
+                return;
+            } else {
+                throw new Error('Server error: ' + response.status);
+            }
+        } catch (serverError) {
+            console.log('Server tidak tersedia, menggunakan fallback:', serverError);
+            
+            // Fallback: Auto-download file JSON baru
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'data.json';
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Cleanup URL object
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            showNotification('Server offline. File data.json telah didownload - ganti file lama!', 'info');
+            updateSyncStatus('local');
+        }
         
     } catch (error) {
         console.error('Error saving data:', error);
@@ -314,98 +337,70 @@ async function updateDataJsonFile(data) {
 
 // Fungsi untuk download data.json yang sudah diupdate
 function downloadUpdatedDataJson() {
-    if (window.latestDataForSync) {
-        const link = document.createElement('a');
-        link.href = window.latestDataForSync.downloadUrl;
-        link.download = 'data.json';
-        link.click();
-        
-        showNotification('File data.json berhasil didownload! Ganti file data.json yang lama dengan yang baru.', 'success');
-    } else {
-        showNotification('Tidak ada data untuk didownload. Simpan data terlebih dahulu.', 'error');
-    }
-}
-
-// Fungsi untuk migrasi data dari localStorage ke JSON
-async function migrateFromLocalStorage() {
-    const saved = localStorage.getItem('minimalistRankingData');
-    if (saved) {
-        try {
-            const localData = JSON.parse(saved);
-            
-            // Cek apakah ada data di localStorage yang perlu dipindahkan
-            if (localData.participants && localData.participants.length > 0) {
-                const confirmMigrate = confirm(
-                    `Ditemukan ${localData.participants.length} peserta di penyimpanan lokal.\n` +
-                    'Apakah Anda ingin memindahkan data ini ke database JSON?\n\n' +
-                    'Data yang akan dipindahkan:\n' +
-                    localData.participants.map(p => `• ${p.name}: ${p.swearCount} kata kasar`).join('\n')
-                );
-                
-                if (confirmMigrate) {
-                    // Update data.json dengan data dari localStorage
-                    const migratedData = {
-                        participants: localData.participants,
-                        settings: {
-                            isDarkMode: localData.settings?.isDarkMode || localData.isDarkMode || false,
-                            lastUpdated: new Date().toISOString(),
-                            version: "1.0.0"
-                        },
-                        metadata: {
-                            created: new Date().toISOString(),
-                            totalSessions: localData.participants.length,
-                            description: "Database untuk Dashboard Kata Kasar (Migrated from localStorage)"
-                        }
-                    };
-                    
-                    // Simpan data yang sudah dimigrasi
-                    participants = migratedData.participants;
-                    isDarkMode = migratedData.settings.isDarkMode;
-                    
-                    if (isDarkMode) {
-                        document.body.classList.add('dark-mode');
-                    }
-                    
-                    // Simpan ke localStorage dengan format baru
-                    localStorage.setItem('minimalistRankingData', JSON.stringify(migratedData));
-                    
-                    showNotification(`Berhasil memindahkan ${participants.length} peserta ke database JSON!`, 'success');
-                    updateSyncStatus('synced');
-                    
-                    return true; // Migrasi berhasil
-                }
+    try {
+        // Buat data terkini untuk download
+        const data = {
+            participants: participants,
+            settings: {
+                isDarkMode: isDarkMode,
+                lastUpdated: new Date().toISOString(),
+                version: "1.0.0"
+            },
+            metadata: {
+                created: new Date().toISOString(),
+                totalSessions: participants.length,
+                description: "Database untuk Dashboard Kata Kasar"
             }
-        } catch (error) {
-            console.error('Error during migration:', error);
-            showNotification('Gagal memindahkan data dari localStorage', 'error');
-        }
+        };
+        
+        const dataStr = JSON.stringify(data, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'data.json';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Cleanup URL object
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+        }, 100);
+        
+        showNotification('File data.json berhasil didownload!', 'success');
+        
+    } catch (error) {
+        console.error('Error downloading JSON:', error);
+        showNotification('Gagal mendownload file JSON!', 'error');
     }
-    return false; // Tidak ada migrasi
 }
 
 // Fungsi untuk memuat data dari JSON file
 async function loadData() {
+    console.log('Loading data...');
     try {
-        // Coba load dari file JSON terlebih dahulu
+        // Load langsung dari file JSON
         const response = await fetch('./data.json');
+        console.log('Fetch response:', response.status, response.ok);
         
         if (response.ok) {
             const data = await response.json();
-            
-            // Jika data.json kosong, coba migrasi dari localStorage
-            if (!data.participants || data.participants.length === 0) {
-                const migrated = await migrateFromLocalStorage();
-                if (migrated) {
-                    return; // Data sudah dimuat dari migrasi
-                }
-            }
+            console.log('Data loaded from JSON:', data);
             
             participants = data.participants || [];
             isDarkMode = data.settings?.isDarkMode || false;
             
+            console.log('Participants loaded:', participants.length);
+            
             if (isDarkMode) {
                 document.body.classList.add('dark-mode');
             }
+            
+            // Simpan ke localStorage sebagai backup
+            localStorage.setItem('minimalistRankingData', JSON.stringify(data));
             
             updateSyncStatus('synced');
             
@@ -415,12 +410,17 @@ async function loadData() {
                 showNotification('Database JSON siap digunakan', 'info');
             }
             
+            // Render data setelah dimuat
+            renderParticipants();
+            updateStats();
+            
         } else {
-            throw new Error('Failed to load from server');
+            throw new Error(`Failed to load from JSON file: ${response.status}`);
         }
         
     } catch (error) {
-        console.log('Loading from localStorage as fallback');
+        console.error('Error loading from JSON:', error);
+        console.log('Gagal load dari JSON, menggunakan localStorage sebagai fallback');
         
         // Fallback ke localStorage jika gagal load dari JSON
         const saved = localStorage.getItem('minimalistRankingData');
@@ -429,13 +429,20 @@ async function loadData() {
             participants = data.participants || [];
             isDarkMode = data.settings?.isDarkMode || data.isDarkMode || false;
             
+            console.log('Data loaded from localStorage:', participants.length, 'participants');
+            
             if (isDarkMode) {
                 document.body.classList.add('dark-mode');
             }
             
             updateSyncStatus('local');
             showNotification('Data dimuat dari penyimpanan lokal', 'info');
+            
+            // Render data setelah dimuat
+            renderParticipants();
+            updateStats();
         } else {
+            console.log('No data found in localStorage');
             updateSyncStatus('empty');
             showNotification('Memulai dengan data kosong', 'info');
         }

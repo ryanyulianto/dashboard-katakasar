@@ -1,13 +1,44 @@
 {
-  "participants": [],
+  "participants": [
+    {
+      "id": 1640995200000,
+      "name": "Ryan",
+      "swearCount": 20,
+      "joinDate": "31/12/2021"
+    },
+    {
+      "id": 1640995260000,
+      "name": "Budi",
+      "swearCount": 5,
+      "joinDate": "31/12/2021"
+    },
+    {
+      "id": 1640995320000,
+      "name": "Syahrizal",
+      "swearCount": 12,
+      "joinDate": "31/12/2021"
+    },
+    {
+      "id": 1640995380000,
+      "name": "Ivan",
+      "swearCount": 10,
+      "joinDate": "31/12/2021"
+    },
+    {
+      "id": 1640995440000,
+      "name": "Erik",
+      "swearCount": 2,
+      "joinDate": "31/12/2021"
+    }
+  ],
   "settings": {
     "isDarkMode": false,
-    "lastUpdated": "2024-01-01T00:00:00.000Z",
+    "lastUpdated": "2025-07-30T06:37:32.144Z",
     "version": "1.0.0"
   },
   "metadata": {
-    "created": "2024-01-01T00:00:00.000Z",
-    "totalSessions": 0,
+    "created": "2025-07-30T06:37:32.144Z",
+    "totalSessions": 5,
     "description": "Database untuk Dashboard Kata Kasar"
   }
 }

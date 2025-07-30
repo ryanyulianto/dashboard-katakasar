@@ -63,12 +63,16 @@
                 <span class="sync-text">Memuat data...</span>
             </div>
             <div class="sync-buttons">
-                <button onclick="refreshData()" class="refresh-btn">🔄 Refresh Data</button>
                 <button onclick="backupData()" class="backup-btn">💾 Backup Data</button>
-                <!-- <button onclick="migrateFromLocalStorage()" class="migrate-btn">📤 Migrasi Data</button>
-                <button onclick="downloadUpdatedDataJson()" class="download-btn">📥 Download JSON</button> -->
+                <button onclick="downloadUpdatedDataJson()" class="download-btn">📥 Download JSON</button>
             </div>
-            <p class="sync-info">Data disimpan dalam file JSON yang dapat diakses dari device manapun</p>
+            <div class="sync-info">
+                <p><strong>📌 Auto-Save ke File JSON:</strong></p>
+                <p>• Jalankan server: <code>npm install && npm start</code></p>
+                <p>• Akses: <code>http://localhost:3001</code></p>
+                <p>• Data otomatis tersimpan ke file <code>data.json</code></p>
+                <p>• Jika server offline, akan auto-download backup</p>
+            </div>
         </div>
 
         <!-- Participants Management -->
