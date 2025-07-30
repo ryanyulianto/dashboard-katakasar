@@ -54,7 +54,8 @@ body.dark-mode {
   grid-template-areas:
     "header header"
     "add-participant stats"
-    "participants actions";
+    "sync actions"
+    "participants participants";
 }
 
 .bento-item {
@@ -115,6 +116,9 @@ body.dark-mode {
 }
 .actions-box {
   grid-area: actions;
+}
+.sync-box {
+  grid-area: sync;
 }
 
 /* Header */
@@ -274,6 +278,123 @@ button:hover {
 
 .toggle-btn:hover {
   background: #4b5563;
+}
+
+.refresh-btn {
+  background: #10b981;
+  color: white;
+}
+
+.refresh-btn:hover {
+  background: #059669;
+}
+
+.backup-btn {
+  background: #8b5cf6;
+  color: white;
+}
+
+.backup-btn:hover {
+  background: #7c3aed;
+}
+
+.migrate-btn {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.migrate-btn:hover {
+  background: linear-gradient(135deg, #d97706, #b45309);
+}
+
+.download-btn {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+}
+
+.download-btn:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+}
+
+/* Sync Status */
+.sync-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.sync-status.status-synced {
+  background: rgba(16, 185, 129, 0.1);
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  color: #059669;
+}
+
+.sync-status.status-local {
+  background: rgba(251, 191, 36, 0.1);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  color: #d97706;
+}
+
+.sync-status.status-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+}
+
+.sync-status.status-empty {
+  background: rgba(107, 114, 128, 0.1);
+  border: 2px solid rgba(107, 114, 128, 0.3);
+  color: #4b5563;
+}
+
+.sync-icon {
+  font-size: 1.2em;
+}
+
+.sync-text {
+  font-size: 0.95em;
+}
+
+.sync-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sync-info {
+  font-size: 0.85em;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.dark-mode .sync-info {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dark-mode .sync-status.status-synced {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.dark-mode .sync-status.status-local {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.dark-mode .sync-status.status-error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.dark-mode .sync-status.status-empty {
+  background: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
 }
 
 /* Participants List */

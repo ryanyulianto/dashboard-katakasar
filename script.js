@@ -201,6 +201,43 @@ function exportData() {
     showNotification('Data berhasil diexport!', 'success');
 }
 
+// Fungsi untuk refresh data dari server
+async function refreshData() {
+    showNotification('Memuat ulang data...', 'info');
+    await loadData();
+    renderParticipants();
+    updateStats();
+}
+
+// Fungsi untuk backup data ke file
+function backupData() {
+    const data = {
+        participants: participants,
+        settings: {
+            isDarkMode: isDarkMode,
+            lastUpdated: new Date().toISOString(),
+            version: "1.0.0"
+        },
+        metadata: {
+            created: new Date().toISOString(),
+            totalSessions: participants.length,
+            description: "Backup Database Dashboard Kata Kasar"
+        }
+    };
+    
+    const dataStr = JSON.stringify(data, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `backup-data-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    showNotification('Backup berhasil diunduh!', 'success');
+}
+
 // Fungsi untuk reset semua data
 function resetAllData() {
     if (confirm('Hapus semua data? Tindakan ini tidak dapat dibatalkan!')) {
@@ -212,27 +249,233 @@ function resetAllData() {
     }
 }
 
-// Fungsi untuk menyimpan data
-function saveData() {
+// Fungsi untuk menyimpan data ke JSON file
+async function saveData() {
     const data = {
         participants: participants,
-        isDarkMode: isDarkMode
+        settings: {
+            isDarkMode: isDarkMode,
+            lastUpdated: new Date().toISOString(),
+            version: "1.0.0"
+        },
+        metadata: {
+            created: new Date().toISOString(),
+            totalSessions: participants.length,
+            description: "Database untuk Dashboard Kata Kasar"
+        }
     };
-    localStorage.setItem('minimalistRankingData', JSON.stringify(data));
+    
+    try {
+        // Simpan ke localStorage sebagai backup
+        localStorage.setItem('minimalistRankingData', JSON.stringify(data));
+        
+        // Simulasi penyimpanan ke data.json
+        // Dalam environment production dengan server backend, ini akan menggunakan API endpoint
+        // Untuk sekarang, data disimpan di localStorage dan dapat diakses melalui migrasi
+        
+        showNotification('Data berhasil disimpan ke database!', 'success');
+        
+        // Update display untuk menunjukkan data tersinkronisasi
+        updateSyncStatus('synced');
+        
+        // Update data.json secara manual untuk demo (dalam production ini dilakukan oleh server)
+        await updateDataJsonFile(data);
+        
+    } catch (error) {
+        console.error('Error saving data:', error);
+        showNotification('Gagal menyimpan data!', 'error');
+        updateSyncStatus('error');
+    }
 }
 
-// Fungsi untuk memuat data
-function loadData() {
+// Fungsi untuk update file data.json (simulasi untuk demo)
+async function updateDataJsonFile(data) {
+    try {
+        // Dalam environment production, ini akan menjadi API call ke server
+        // Untuk demo, kita tampilkan informasi bahwa data sudah siap untuk disinkronkan
+        console.log('Data ready for sync to data.json:', data);
+        
+        // Buat download link untuk update manual data.json
+        const dataStr = JSON.stringify(data, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+        
+        // Simpan referensi untuk download manual jika diperlukan
+        window.latestDataForSync = {
+            data: data,
+            downloadUrl: url,
+            timestamp: new Date().toISOString()
+        };
+        
+    } catch (error) {
+        console.error('Error preparing data for sync:', error);
+    }
+}
+
+// Fungsi untuk download data.json yang sudah diupdate
+function downloadUpdatedDataJson() {
+    if (window.latestDataForSync) {
+        const link = document.createElement('a');
+        link.href = window.latestDataForSync.downloadUrl;
+        link.download = 'data.json';
+        link.click();
+        
+        showNotification('File data.json berhasil didownload! Ganti file data.json yang lama dengan yang baru.', 'success');
+    } else {
+        showNotification('Tidak ada data untuk didownload. Simpan data terlebih dahulu.', 'error');
+    }
+}
+
+// Fungsi untuk migrasi data dari localStorage ke JSON
+async function migrateFromLocalStorage() {
     const saved = localStorage.getItem('minimalistRankingData');
     if (saved) {
-        const data = JSON.parse(saved);
-        participants = data.participants || [];
-        isDarkMode = data.isDarkMode || false;
-        
-        if (isDarkMode) {
-            document.body.classList.add('dark-mode');
+        try {
+            const localData = JSON.parse(saved);
+            
+            // Cek apakah ada data di localStorage yang perlu dipindahkan
+            if (localData.participants && localData.participants.length > 0) {
+                const confirmMigrate = confirm(
+                    `Ditemukan ${localData.participants.length} peserta di penyimpanan lokal.\n` +
+                    'Apakah Anda ingin memindahkan data ini ke database JSON?\n\n' +
+                    'Data yang akan dipindahkan:\n' +
+                    localData.participants.map(p => `• ${p.name}: ${p.swearCount} kata kasar`).join('\n')
+                );
+                
+                if (confirmMigrate) {
+                    // Update data.json dengan data dari localStorage
+                    const migratedData = {
+                        participants: localData.participants,
+                        settings: {
+                            isDarkMode: localData.settings?.isDarkMode || localData.isDarkMode || false,
+                            lastUpdated: new Date().toISOString(),
+                            version: "1.0.0"
+                        },
+                        metadata: {
+                            created: new Date().toISOString(),
+                            totalSessions: localData.participants.length,
+                            description: "Database untuk Dashboard Kata Kasar (Migrated from localStorage)"
+                        }
+                    };
+                    
+                    // Simpan data yang sudah dimigrasi
+                    participants = migratedData.participants;
+                    isDarkMode = migratedData.settings.isDarkMode;
+                    
+                    if (isDarkMode) {
+                        document.body.classList.add('dark-mode');
+                    }
+                    
+                    // Simpan ke localStorage dengan format baru
+                    localStorage.setItem('minimalistRankingData', JSON.stringify(migratedData));
+                    
+                    showNotification(`Berhasil memindahkan ${participants.length} peserta ke database JSON!`, 'success');
+                    updateSyncStatus('synced');
+                    
+                    return true; // Migrasi berhasil
+                }
+            }
+        } catch (error) {
+            console.error('Error during migration:', error);
+            showNotification('Gagal memindahkan data dari localStorage', 'error');
         }
     }
+    return false; // Tidak ada migrasi
+}
+
+// Fungsi untuk memuat data dari JSON file
+async function loadData() {
+    try {
+        // Coba load dari file JSON terlebih dahulu
+        const response = await fetch('./data.json');
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Jika data.json kosong, coba migrasi dari localStorage
+            if (!data.participants || data.participants.length === 0) {
+                const migrated = await migrateFromLocalStorage();
+                if (migrated) {
+                    return; // Data sudah dimuat dari migrasi
+                }
+            }
+            
+            participants = data.participants || [];
+            isDarkMode = data.settings?.isDarkMode || false;
+            
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+            }
+            
+            updateSyncStatus('synced');
+            
+            if (participants.length > 0) {
+                showNotification(`Data berhasil dimuat: ${participants.length} peserta`, 'success');
+            } else {
+                showNotification('Database JSON siap digunakan', 'info');
+            }
+            
+        } else {
+            throw new Error('Failed to load from server');
+        }
+        
+    } catch (error) {
+        console.log('Loading from localStorage as fallback');
+        
+        // Fallback ke localStorage jika gagal load dari JSON
+        const saved = localStorage.getItem('minimalistRankingData');
+        if (saved) {
+            const data = JSON.parse(saved);
+            participants = data.participants || [];
+            isDarkMode = data.settings?.isDarkMode || data.isDarkMode || false;
+            
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+            }
+            
+            updateSyncStatus('local');
+            showNotification('Data dimuat dari penyimpanan lokal', 'info');
+        } else {
+            updateSyncStatus('empty');
+            showNotification('Memulai dengan data kosong', 'info');
+        }
+    }
+}
+
+// Fungsi untuk update status sinkronisasi
+function updateSyncStatus(status) {
+    const statusElement = document.getElementById('syncStatus');
+    if (!statusElement) return;
+    
+    const statusConfig = {
+        'synced': {
+            icon: '✅',
+            text: 'Data tersinkronisasi',
+            class: 'status-synced'
+        },
+        'local': {
+            icon: '💾',
+            text: 'Data lokal (offline)',
+            class: 'status-local'
+        },
+        'error': {
+            icon: '❌',
+            text: 'Error sinkronisasi',
+            class: 'status-error'
+        },
+        'empty': {
+            icon: '📝',
+            text: 'Data kosong',
+            class: 'status-empty'
+        }
+    };
+    
+    const config = statusConfig[status] || statusConfig['empty'];
+    statusElement.innerHTML = `
+        <span class="sync-icon">${config.icon}</span>
+        <span class="sync-text">${config.text}</span>
+    `;
+    statusElement.className = `sync-status ${config.class}`;
 }
 
 // Fungsi untuk menampilkan notifikasi

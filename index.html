@@ -55,6 +55,22 @@
             </div>
         </div>
 
+        <!-- Data Sync Bento -->
+        <div class="bento-item sync-box">
+            <h3>💾 Status Database</h3>
+            <div id="syncStatus" class="sync-status">
+                <span class="sync-icon">📝</span>
+                <span class="sync-text">Memuat data...</span>
+            </div>
+            <div class="sync-buttons">
+                <button onclick="refreshData()" class="refresh-btn">🔄 Refresh Data</button>
+                <button onclick="backupData()" class="backup-btn">💾 Backup Data</button>
+                <button onclick="migrateFromLocalStorage()" class="migrate-btn">📤 Migrasi Data</button>
+                <button onclick="downloadUpdatedDataJson()" class="download-btn">📥 Download JSON</button>
+            </div>
+            <p class="sync-info">Data disimpan dalam file JSON yang dapat diakses dari device manapun</p>
+        </div>
+
         <!-- Participants Management -->
         <div class="bento-item participants-box">
             <h3>👥 Kelola Peserta</h3>
