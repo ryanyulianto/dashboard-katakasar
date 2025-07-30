@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍱 Bento Box - Dashboard Kata Kasar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="bento-container">
+        <!-- Header Bento -->
+        <div class="bento-item header-box">
+            <h1>🍱 Bento Dashboard</h1>
+            <p>Sistem Tracking Kata Kasar</p>
+        </div>
+
+        <!-- Add Participant Bento -->
+        <div class="bento-item add-participant-box">
+            <h3>👤 Tambah Peserta</h3>
+            <div class="form-group">
+                <input type="text" id="participantName" placeholder="Nama peserta...">
+                <button onclick="addParticipant()">➕ Tambah</button>
+            </div>
+        </div>
+
+        <!-- Statistics Bento -->
+        <div class="bento-item stats-box">
+            <h3>📊 Statistik</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalParticipants">0</span>
+                    <span class="stat-label">Peserta</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="totalSwears">0</span>
+                    <span class="stat-label">Total Kata</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="totalFine">Rp 0</span>
+                    <span class="stat-label">Total Denda</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Bento -->
+        <div class="bento-item actions-box">
+            <h3>⚡ Menu</h3>
+            <div class="action-buttons">
+                <button onclick="showRankingDashboard()" class="primary-btn">🏆 Lihat Ranking</button>
+                <button onclick="exportData()" class="info-btn">📤 Export Data</button>
+                <button onclick="toggleDarkMode()" class="toggle-btn">🌙 Dark Mode</button>
+                <button onclick="resetAllData()" class="danger-btn">🗑️ Reset Data</button>
+            </div>
+        </div>
+
+        <!-- Participants Management -->
+        <div class="bento-item participants-box">
+            <h3>👥 Kelola Peserta</h3>
+            <div id="participantsList" class="participants-list">
+                <!-- Peserta akan ditampilkan di sini -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Ranking Dashboard Modal -->
+    <div id="rankingModal" class="modal">
+        <div class="modal-content ranking-modal">
+            <div class="modal-header">
+                <h2>🏆 Dashboard Ranking</h2>
+                <span class="close" onclick="closeRankingModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="ranking-stats">
+                    <div class="ranking-stat">
+                        <span class="ranking-stat-number" id="rankingTotalParticipants">0</span>
+                        <span class="ranking-stat-label">Total Peserta</span>
+                    </div>
+                    <div class="ranking-stat">
+                        <span class="ranking-stat-number" id="rankingTotalSwears">0</span>
+                        <span class="ranking-stat-label">Total Kata Kasar</span>
+                    </div>
+                    <div class="ranking-stat">
+                        <span class="ranking-stat-number" id="rankingTotalFine">Rp 0</span>
+                        <span class="ranking-stat-label">Total Denda</span>
+                    </div>
+                </div>
+                <div id="rankingList" class="ranking-list">
+                    <!-- Ranking akan ditampilkan di sini -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
