@@ -1,7 +1,6 @@
 // Data peserta
 let participants = [];
 let isDarkMode = false;
-let isUpdating = false; // Flag untuk mencegah multiple updates
 
 // Load data saat halaman dimuat
 window.addEventListener('load', function() {
@@ -39,94 +38,29 @@ function addParticipant() {
     showNotification(`Peserta "${name}" berhasil ditambahkan!`, 'success');
 }
 
-// Fungsi untuk refresh data sebelum update (mencegah race condition)
-async function refreshDataBeforeUpdate() {
-    const hasBackendAPI = (window.location.hostname === 'localhost' && window.location.port === '3001') || 
-                         window.location.hostname.includes('vercel.app') ||
-                         window.location.hostname !== 'localhost';
-    
-    if (hasBackendAPI) {
-        try {
-            const response = await fetch('/api/load-data');
-            if (response.ok) {
-                const latestData = await response.json();
-                
-                // Update participants dengan data terbaru dari server
-                participants = latestData.participants || [];
-                isDarkMode = latestData.settings?.isDarkMode || false;
-                
-                // Update localStorage dengan data terbaru
-                localStorage.setItem('minimalistRankingData', JSON.stringify(latestData));
-                
-                console.log('Data refreshed before update:', participants.length, 'participants');
-                return true;
-            }
-        } catch (error) {
-            console.log('Failed to refresh data from server:', error);
-        }
-    }
-    
-    // Fallback: tidak ada refresh jika server tidak tersedia
-    return false;
-}
-
-// Fungsi untuk menambah jumlah kata kasar dengan sync check
-async function addSwear(participantId) {
-    if (isUpdating) {
-        showNotification('Sedang memproses, tunggu sebentar...', 'info');
-        return;
-    }
-    
-    isUpdating = true;
-    
-    try {
-        // Refresh data terlebih dahulu untuk memastikan data terbaru
-        await refreshDataBeforeUpdate();
-        
-        const participant = participants.find(p => p.id === participantId);
-        if (participant) {
-            participant.swearCount++;
-            await saveData();
-            renderParticipants();
-            updateStats();
-            showNotification(`${participant.name} +1 kata kasar! Total: ${participant.swearCount}`, 'warning');
-        }
-    } catch (error) {
-        console.error('Error adding swear:', error);
-        showNotification('Gagal menambah kata kasar!', 'error');
-    } finally {
-        isUpdating = false;
+// Fungsi untuk menambah jumlah kata kasar
+function addSwear(participantId) {
+    const participant = participants.find(p => p.id === participantId);
+    if (participant) {
+        participant.swearCount++;
+        saveData();
+        renderParticipants();
+        updateStats();
+        showNotification(`${participant.name} +1 kata kasar! Total: ${participant.swearCount}`, 'warning');
     }
 }
 
-// Fungsi untuk mengurangi jumlah kata kasar dengan sync check
-async function minusSwear(participantId) {
-    if (isUpdating) {
-        showNotification('Sedang memproses, tunggu sebentar...', 'info');
-        return;
-    }
-    
-    isUpdating = true;
-    
-    try {
-        // Refresh data terlebih dahulu untuk memastikan data terbaru
-        await refreshDataBeforeUpdate();
-        
-        const participant = participants.find(p => p.id === participantId);
-        if (participant && participant.swearCount > 0) {
-            participant.swearCount--;
-            await saveData();
-            renderParticipants();
-            updateStats();
-            showNotification(`${participant.name} -1 kata kasar! Total: ${participant.swearCount}`, 'info');
-        } else if (participant && participant.swearCount === 0) {
-            showNotification('Jumlah kata kasar sudah 0!', 'error');
-        }
-    } catch (error) {
-        console.error('Error reducing swear:', error);
-        showNotification('Gagal mengurangi kata kasar!', 'error');
-    } finally {
-        isUpdating = false;
+// Fungsi untuk mengurangi jumlah kata kasar
+function minusSwear(participantId) {
+    const participant = participants.find(p => p.id === participantId);
+    if (participant && participant.swearCount > 0) {
+        participant.swearCount--;
+        saveData();
+        renderParticipants();
+        updateStats();
+        showNotification(`${participant.name} -1 kata kasar! Total: ${participant.swearCount}`, 'info');
+    } else if (participant && participant.swearCount === 0) {
+        showNotification('Jumlah kata kasar sudah 0!', 'error');
     }
 }
 
@@ -162,14 +96,14 @@ function renderParticipants() {
                 <div class="participant-name">${participant.name}</div>
             </div>
             <div class="participant-actions">
-                <button class="count-btn minus-btn" onclick="minusSwear(${participant.id})" title="Kurangi kata kasar" ${isUpdating ? 'disabled' : ''}>
-                    ${isUpdating ? '⏳' : '−'}
+                <button class="count-btn minus-btn" onclick="minusSwear(${participant.id})" title="Kurangi kata kasar">
+                    −
                 </button>
                 <div class="swear-count">${participant.swearCount}</div>
-                <button class="count-btn add-btn" onclick="addSwear(${participant.id})" title="Tambah kata kasar" ${isUpdating ? 'disabled' : ''}>
-                    ${isUpdating ? '⏳' : '+'}
+                <button class="count-btn add-btn" onclick="addSwear(${participant.id})" title="Tambah kata kasar">
+                    +
                 </button>
-                <button class="delete-btn" onclick="deleteParticipant(${participant.id})" title="Hapus peserta" ${isUpdating ? 'disabled' : ''}>
+                <button class="delete-btn" onclick="deleteParticipant(${participant.id})" title="Hapus peserta">
                     🗑️
                 </button>
             </div>

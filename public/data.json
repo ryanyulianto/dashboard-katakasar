@@ -3,7 +3,7 @@
     {
       "id": 1640995200000,
       "name": "Ryan",
-      "swearCount": 20,
+      "swearCount": 22,
       "joinDate": "31/12/2021"
     },
     {
@@ -33,11 +33,11 @@
   ],
   "settings": {
     "isDarkMode": false,
-    "lastUpdated": "2025-07-30T06:40:17.181Z",
+    "lastUpdated": "2025-07-30T09:01:34.240Z",
     "version": "1.0.0"
   },
   "metadata": {
-    "created": "2025-07-30T06:40:17.181Z",
+    "created": "2025-07-30T09:01:34.227Z",
     "totalSessions": 5,
     "description": "Database untuk Dashboard Kata Kasar"
   }

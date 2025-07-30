@@ -5,25 +5,21 @@ const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-
-// In-memory storage untuk Vercel (karena file system read-only)
-let appData = null;
+const DATA_FILE_PATH = path.join(__dirname, 'public', 'data.json');
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Load initial data dari file (hanya sekali saat startup)
-async function loadInitialData() {
+// Fungsi untuk membaca data dari file JSON
+async function readDataFromFile() {
     try {
-        const filePath = path.join(__dirname, 'public', 'data.json');
-        const data = await fs.readFile(filePath, 'utf8');
-        appData = JSON.parse(data);
-        console.log('Initial data loaded from data.json');
+        const data = await fs.readFile(DATA_FILE_PATH, 'utf8');
+        return JSON.parse(data);
     } catch (error) {
-        console.log('No initial data.json found, starting with empty data');
-        appData = {
+        console.log('No data.json found, creating new file with default data');
+        const defaultData = {
             participants: [],
             settings: {
                 isDarkMode: false,
@@ -36,46 +32,56 @@ async function loadInitialData() {
                 description: "Database untuk Dashboard Kata Kasar"
             }
         };
+        await writeDataToFile(defaultData);
+        return defaultData;
     }
 }
 
-// Endpoint untuk menyimpan data (in-memory untuk Vercel)
+// Fungsi untuk menulis data ke file JSON
+async function writeDataToFile(data) {
+    try {
+        await fs.writeFile(DATA_FILE_PATH, JSON.stringify(data, null, 2), 'utf8');
+        console.log('Data berhasil disimpan ke data.json');
+        return true;
+    } catch (error) {
+        console.error('Error writing to data.json:', error);
+        throw error;
+    }
+}
+
+// Endpoint untuk menyimpan data langsung ke file JSON
 app.post('/api/save-data', async (req, res) => {
     try {
         const data = req.body;
         
-        // Simpan ke memory
-        appData = data;
-        
-        // Untuk development lokal, coba tulis ke file
-        if (process.env.NODE_ENV !== 'production') {
-            try {
-                const filePath = path.join(__dirname, 'public', 'data.json');
-                await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
-                console.log('Data berhasil disimpan ke data.json (local)');
-            } catch (fileError) {
-                console.log('File write failed (expected in production):', fileError.message);
-            }
+        // Validasi data
+        if (!data || typeof data !== 'object') {
+            return res.status(400).json({ success: false, message: 'Data tidak valid!' });
         }
         
-        console.log('Data berhasil disimpan ke memory');
-        res.json({ success: true, message: 'Data berhasil disimpan!' });
+        // Update timestamp
+        if (data.settings) {
+            data.settings.lastUpdated = new Date().toISOString();
+        }
+        
+        // Simpan langsung ke file JSON
+        await writeDataToFile(data);
+        
+        res.json({ success: true, message: 'Data berhasil disimpan ke file JSON!' });
     } catch (error) {
         console.error('Error saving data:', error);
-        res.status(500).json({ success: false, message: 'Gagal menyimpan data!' });
+        res.status(500).json({ success: false, message: 'Gagal menyimpan data: ' + error.message });
     }
 });
 
-// Endpoint untuk membaca data
+// Endpoint untuk membaca data langsung dari file JSON
 app.get('/api/load-data', async (req, res) => {
     try {
-        if (!appData) {
-            await loadInitialData();
-        }
-        res.json(appData);
+        const data = await readDataFromFile();
+        res.json(data);
     } catch (error) {
         console.error('Error loading data:', error);
-        res.status(500).json({ success: false, message: 'Gagal memuat data!' });
+        res.status(500).json({ success: false, message: 'Gagal memuat data: ' + error.message });
     }
 });
 
@@ -84,14 +90,17 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Initialize data dan start server
-async function startServer() {
-    await loadInitialData();
-    app.listen(PORT, () => {
-        console.log(`Server berjalan di http://localhost:${PORT}`);
-        console.log('Aplikasi siap digunakan dengan in-memory storage!');
-        console.log('Data akan persisten selama server berjalan.');
-    });
-}
-
-startServer().catch(console.error);
+// Start server
+app.listen(PORT, async () => {
+    console.log(`Server berjalan di http://localhost:${PORT}`);
+    console.log('Aplikasi siap digunakan dengan file-based storage!');
+    console.log('Data akan tersimpan permanen di data.json');
+    
+    // Pastikan file data.json ada
+    try {
+        await readDataFromFile();
+        console.log('File data.json siap digunakan');
+    } catch (error) {
+        console.error('Error initializing data file:', error);
+    }
+});
