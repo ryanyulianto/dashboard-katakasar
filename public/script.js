@@ -369,74 +369,110 @@ function downloadUpdatedDataJson() {
     }
 }
 
-// Fungsi untuk memuat data dari JSON file
+// Fungsi untuk memuat data
 async function loadData() {
     console.log('Loading data...');
+    
+    // Cek apakah server backend tersedia
+    const hasBackendAPI = (window.location.hostname === 'localhost' && window.location.port === '3001') || 
+                         window.location.hostname.includes('vercel.app') ||
+                         window.location.hostname !== 'localhost';
+    
+    if (hasBackendAPI) {
+        try {
+            // Coba load dari API server
+            const response = await fetch('/api/load-data');
+            console.log('API response:', response.status, response.ok);
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Data loaded from API:', data);
+                
+                participants = data.participants || [];
+                isDarkMode = data.settings?.isDarkMode || false;
+                
+                console.log('Participants loaded:', participants.length);
+                
+                if (isDarkMode) {
+                    document.body.classList.add('dark-mode');
+                }
+                
+                // Simpan ke localStorage sebagai backup
+                localStorage.setItem('minimalistRankingData', JSON.stringify(data));
+                
+                updateSyncStatus('synced');
+                
+                if (participants.length > 0) {
+                    showNotification(`Data berhasil dimuat: ${participants.length} peserta`, 'success');
+                } else {
+                    showNotification('Database siap digunakan', 'info');
+                }
+                
+                // Render data setelah dimuat
+                renderParticipants();
+                updateStats();
+                return;
+            }
+        } catch (apiError) {
+            console.log('API tidak tersedia, mencoba file JSON:', apiError);
+        }
+    }
+    
+    // Fallback: coba load dari file JSON lokal
     try {
-        // Load langsung dari file JSON
         const response = await fetch('./data.json');
-        console.log('Fetch response:', response.status, response.ok);
+        console.log('JSON file response:', response.status, response.ok);
         
         if (response.ok) {
             const data = await response.json();
-            console.log('Data loaded from JSON:', data);
+            console.log('Data loaded from JSON file:', data);
             
             participants = data.participants || [];
             isDarkMode = data.settings?.isDarkMode || false;
             
-            console.log('Participants loaded:', participants.length);
-            
             if (isDarkMode) {
                 document.body.classList.add('dark-mode');
             }
             
-            // Simpan ke localStorage sebagai backup
             localStorage.setItem('minimalistRankingData', JSON.stringify(data));
-            
-            updateSyncStatus('synced');
+            updateSyncStatus('local');
             
             if (participants.length > 0) {
-                showNotification(`Data berhasil dimuat: ${participants.length} peserta`, 'success');
+                showNotification(`Data dimuat dari file: ${participants.length} peserta`, 'info');
             } else {
                 showNotification('Database JSON siap digunakan', 'info');
             }
             
-            // Render data setelah dimuat
             renderParticipants();
             updateStats();
-            
-        } else {
-            throw new Error(`Failed to load from JSON file: ${response.status}`);
+            return;
+        }
+    } catch (fileError) {
+        console.log('File JSON tidak tersedia:', fileError);
+    }
+    
+    // Final fallback: localStorage
+    const saved = localStorage.getItem('minimalistRankingData');
+    if (saved) {
+        const data = JSON.parse(saved);
+        participants = data.participants || [];
+        isDarkMode = data.settings?.isDarkMode || data.isDarkMode || false;
+        
+        console.log('Data loaded from localStorage:', participants.length, 'participants');
+        
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
         }
         
-    } catch (error) {
-        console.error('Error loading from JSON:', error);
-        console.log('Gagal load dari JSON, menggunakan localStorage sebagai fallback');
+        updateSyncStatus('local');
+        showNotification('Data dimuat dari penyimpanan lokal', 'info');
         
-        // Fallback ke localStorage jika gagal load dari JSON
-        const saved = localStorage.getItem('minimalistRankingData');
-        if (saved) {
-            const data = JSON.parse(saved);
-            participants = data.participants || [];
-            isDarkMode = data.settings?.isDarkMode || data.isDarkMode || false;
-            
-            console.log('Data loaded from localStorage:', participants.length, 'participants');
-            
-            if (isDarkMode) {
-                document.body.classList.add('dark-mode');
-            }
-            
-            updateSyncStatus('local');
-            showNotification('Data dimuat dari penyimpanan lokal', 'info');
-            
-            // Render data setelah dimuat
-            renderParticipants();
-            updateStats();
-        } else {
-            console.log('No data found in localStorage');
-            updateSyncStatus('empty');
-            showNotification('Memulai dengan data kosong', 'info');
-        }
+        renderParticipants();
+        updateStats();
+    } else {
+        console.log('No data found, starting fresh');
+        updateSyncStatus('empty');
+        showNotification('Memulai dengan data kosong', 'info');
     }
 }
 
