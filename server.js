@@ -15,7 +15,7 @@ app.use(express.static('.'));
 app.post('/api/save-data', async (req, res) => {
     try {
         const data = req.body;
-        const filePath = path.join(__dirname, 'data.json');
+        const filePath = path.join(__dirname, 'public', 'data.json');
         
         // Tulis data ke file data.json
         await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
@@ -31,7 +31,7 @@ app.post('/api/save-data', async (req, res) => {
 // Endpoint untuk membaca data dari data.json
 app.get('/api/load-data', async (req, res) => {
     try {
-        const filePath = path.join(__dirname, 'data.json');
+        const filePath = path.join(__dirname, 'public', 'data.json');
         const data = await fs.readFile(filePath, 'utf8');
         res.json(JSON.parse(data));
     } catch (error) {

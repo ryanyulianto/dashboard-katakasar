@@ -258,49 +258,40 @@ async function saveData() {
     };
     
     try {
-        // Simpan ke localStorage sebagai backup
+        // Simpan ke localStorage
         localStorage.setItem('minimalistRankingData', JSON.stringify(data));
         
-        // Coba simpan ke server backend untuk auto-write ke data.json
-        try {
-            const response = await fetch('/api/save-data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-            
-            if (response.ok) {
-                const result = await response.json();
-                showNotification('Data berhasil disimpan ke file data.json!', 'success');
-                updateSyncStatus('synced');
-                return;
-            } else {
-                throw new Error('Server error: ' + response.status);
+        // Cek apakah server backend tersedia (localhost:3001 atau deployment dengan API)
+        const hasBackendAPI = (window.location.hostname === 'localhost' && window.location.port === '3001') || 
+                             window.location.hostname.includes('vercel.app') ||
+                             window.location.hostname !== 'localhost';
+        
+        if (hasBackendAPI) {
+            try {
+                const response = await fetch('/api/save-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    showNotification('Data berhasil disimpan ke file data.json!', 'success');
+                    updateSyncStatus('synced');
+                    return;
+                } else {
+                    throw new Error('Server error: ' + response.status);
+                }
+            } catch (serverError) {
+                console.log('Server tidak tersedia:', serverError);
+                showNotification('Data disimpan ke browser (server offline)', 'info');
+                updateSyncStatus('local');
             }
-        } catch (serverError) {
-            console.log('Server tidak tersedia, menggunakan fallback:', serverError);
-            
-            // Fallback: Auto-download file JSON baru
-            const dataStr = JSON.stringify(data, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'data.json';
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            // Cleanup URL object
-            setTimeout(() => {
-                URL.revokeObjectURL(url);
-            }, 100);
-            
-            showNotification('Server offline. File data.json telah didownload - ganti file lama!', 'info');
+        } else {
+            // Jika bukan di server localhost:3001, hanya simpan ke localStorage
+            showNotification('Data disimpan ke browser', 'success');
             updateSyncStatus('local');
         }
         

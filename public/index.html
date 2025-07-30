@@ -67,11 +67,12 @@
                 <button onclick="downloadUpdatedDataJson()" class="download-btn">📥 Download JSON</button>
             </div>
             <div class="sync-info">
-                <p><strong>📌 Auto-Save ke File JSON:</strong></p>
-                <p>• Jalankan server: <code>npm install && npm start</code></p>
-                <p>• Akses: <code>http://localhost:3001</code></p>
-                <p>• Data otomatis tersimpan ke file <code>data.json</code></p>
-                <p>• Jika server offline, akan auto-download backup</p>
+                <p><strong>📌 Cara Kerja Penyimpanan Data:</strong></p>
+                <p>• <strong>Local:</strong> Data disimpan di browser (localStorage)</p>
+                <p>• <strong>Server lokal:</strong> <code>npm start</code> → <code>localhost:3001</code></p>
+                <p>• <strong>Deploy Vercel:</strong> Auto-save ke file JSON tersedia</p>
+                <p>• <strong>Backup manual:</strong> Gunakan tombol "Download JSON"</p>
+                <p>• <strong>Restore:</strong> Ganti file <code>data.json</code> lalu refresh</p>
             </div>
         </div>
 
