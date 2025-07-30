@@ -490,14 +490,29 @@ button:hover {
   justify-content: center;
   font-size: 16px;
   font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.count-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .add-btn {
   background: linear-gradient(135deg, #10b981, #059669);
 }
 
+.add-btn:disabled {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
 .minus-btn {
   background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.minus-btn:disabled {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
 }
 
 .delete-btn {
@@ -511,6 +526,12 @@ button:hover {
 
 .delete-btn:hover {
   background: #dc2626;
+}
+
+.delete-btn:disabled {
+  background: #6b7280;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Modal */
